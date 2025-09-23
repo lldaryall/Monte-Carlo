@@ -25,7 +25,7 @@ function generateNormalRandom() {
 }
 
 /**
- * Simulate a single GBM path
+ * Simulate a single GBM path (optimized for speed)
  * @param {number} S0 - Initial stock price
  * @param {number} r - Risk-free rate
  * @param {number} sigma - Volatility
@@ -34,17 +34,13 @@ function generateNormalRandom() {
  * @returns {number} Final stock price
  */
 function simulateGBMPath(S0, r, sigma, T, steps) {
-    const dt = T / steps;
-    let currentPrice = S0;
-
-    for (let i = 0; i < steps; i++) {
-        const Z = generateNormalRandom();
-        const driftTerm = (r - 0.5 * sigma * sigma) * dt;
-        const diffusionTerm = sigma * Math.sqrt(dt) * Z;
-        currentPrice = currentPrice * Math.exp(driftTerm + diffusionTerm);
-    }
-
-    return currentPrice;
+    // For European options, we can use the closed-form solution for GBM
+    // S_T = S_0 * exp((r - 0.5*sigma^2)*T + sigma*sqrt(T)*Z)
+    // This is much faster than simulating each time step
+    const Z = generateNormalRandom();
+    const driftTerm = (r - 0.5 * sigma * sigma) * T;
+    const diffusionTerm = sigma * Math.sqrt(T) * Z;
+    return S0 * Math.exp(driftTerm + diffusionTerm);
 }
 
 /**
@@ -167,15 +163,11 @@ function runMonteCarloWithWorker(params) {
             }
 
             function simulateGBMPath(S0, r, sigma, T, steps) {
-                const dt = T / steps;
-                let currentPrice = S0;
-                for (let i = 0; i < steps; i++) {
-                    const Z = generateNormalRandom();
-                    const driftTerm = (r - 0.5 * sigma * sigma) * dt;
-                    const diffusionTerm = sigma * Math.sqrt(dt) * Z;
-                    currentPrice = currentPrice * Math.exp(driftTerm + diffusionTerm);
-                }
-                return currentPrice;
+                // Optimized: Use closed-form GBM solution for European options
+                const Z = generateNormalRandom();
+                const driftTerm = (r - 0.5 * sigma * sigma) * T;
+                const diffusionTerm = sigma * Math.sqrt(T) * Z;
+                return S0 * Math.exp(driftTerm + diffusionTerm);
             }
 
             function callPayoff(S, K) { return Math.max(S - K, 0); }

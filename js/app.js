@@ -197,14 +197,14 @@ class OptionPricingApp {
     }
 
     resetForm() {
-        // Reset to default values
-        this.s0Input.value = '100';
-        this.kInput.value = '100';
-        this.rInput.value = '5';
-        this.sigmaInput.value = '20';
-        this.tInput.value = '1.0';
-        this.stepsInput.value = '252';
-        this.pathsSelect.value = '1000000';
+        // Reset to zero values
+        this.s0Input.value = '0';
+        this.kInput.value = '0';
+        this.rInput.value = '0';
+        this.sigmaInput.value = '0';
+        this.tInput.value = '0';
+        this.stepsInput.value = '0';
+        this.pathsSelect.value = '100000';
         
         // Reset styling
         const inputs = [this.s0Input, this.kInput, this.rInput, this.sigmaInput, this.tInput, this.stepsInput];
