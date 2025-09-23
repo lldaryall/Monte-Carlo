@@ -13,6 +13,7 @@ class OptionPricingApp {
     }
 
     initializeElements() {
+        console.log('Initializing elements...');
         // Input elements
         this.s0Input = document.getElementById('s0');
         this.kInput = document.getElementById('k');
@@ -25,6 +26,18 @@ class OptionPricingApp {
         // Button elements
         this.calculateBtn = document.getElementById('calculateBtn');
         this.resetBtn = document.getElementById('resetBtn');
+        
+        console.log('Elements found:', {
+            s0Input: !!this.s0Input,
+            kInput: !!this.kInput,
+            rInput: !!this.rInput,
+            sigmaInput: !!this.sigmaInput,
+            tInput: !!this.tInput,
+            stepsInput: !!this.stepsInput,
+            pathsSelect: !!this.pathsSelect,
+            calculateBtn: !!this.calculateBtn,
+            resetBtn: !!this.resetBtn
+        });
         
         // Result elements
         this.loadingDiv = document.getElementById('loading');
@@ -50,8 +63,27 @@ class OptionPricingApp {
     }
 
     bindEvents() {
-        this.calculateBtn.addEventListener('click', () => this.calculatePrices());
-        this.resetBtn.addEventListener('click', () => this.resetForm());
+        console.log('Binding events...');
+        console.log('Calculate button:', this.calculateBtn);
+        console.log('Reset button:', this.resetBtn);
+        
+        if (this.calculateBtn) {
+            this.calculateBtn.addEventListener('click', () => {
+                console.log('Calculate button clicked');
+                this.calculatePrices();
+            });
+        } else {
+            console.error('Calculate button not found!');
+        }
+        
+        if (this.resetBtn) {
+            this.resetBtn.addEventListener('click', () => {
+                console.log('Reset button clicked');
+                this.resetForm();
+            });
+        } else {
+            console.error('Reset button not found!');
+        }
         
         // Add input validation
         this.addInputValidation();
@@ -83,14 +115,26 @@ class OptionPricingApp {
 
     async calculatePrices() {
         try {
+            console.log('Starting calculation...');
             this.showLoading();
             this.disableForm();
             
             const params = this.getInputParameters();
+            console.log('Parameters:', params);
+            
+            // Check if Black-Scholes functions are available
+            if (typeof bsCall !== 'function') {
+                throw new Error('bsCall function not found');
+            }
+            if (typeof bsPut !== 'function') {
+                throw new Error('bsPut function not found');
+            }
             
             // Calculate Black-Scholes prices
+            console.log('Calculating Black-Scholes prices...');
             const bsCallPrice = bsCall(params.S0, params.K, params.r, params.sigma, params.T);
             const bsPutPrice = bsPut(params.S0, params.K, params.r, params.sigma, params.T);
+            console.log('Black-Scholes results:', { bsCallPrice, bsPutPrice });
             
             // Run Monte Carlo simulations
             const startTime = performance.now();
@@ -197,14 +241,15 @@ class OptionPricingApp {
     }
 
     resetForm() {
+        console.log('Resetting form...');
         // Reset to default values
-        this.s0Input.value = '100';
-        this.kInput.value = '100';
-        this.rInput.value = '5';
-        this.sigmaInput.value = '20';
-        this.tInput.value = '1.0';
-        this.stepsInput.value = '252';
-        this.pathsSelect.value = '1000000';
+        if (this.s0Input) this.s0Input.value = '100';
+        if (this.kInput) this.kInput.value = '100';
+        if (this.rInput) this.rInput.value = '5';
+        if (this.sigmaInput) this.sigmaInput.value = '20';
+        if (this.tInput) this.tInput.value = '1.0';
+        if (this.stepsInput) this.stepsInput.value = '252';
+        if (this.pathsSelect) this.pathsSelect.value = '1000000';
         
         // Reset styling
         const inputs = [this.s0Input, this.kInput, this.rInput, this.sigmaInput, this.tInput, this.stepsInput];
