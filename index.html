@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monte Carlo Option Pricing Simulator</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-chart-line"></i> Monte Carlo Option Pricing Simulator</h1>
+                <p class="subtitle">Advanced European option pricing with statistical analysis</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="card">
+                    <h2><i class="fas fa-cog"></i> Parameters</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="s0">Initial Stock Price (S₀)</label>
+                            <input type="number" id="s0" value="100" step="0.01" min="0.01">
+                            <span class="unit">$</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="k">Strike Price (K)</label>
+                            <input type="number" id="k" value="100" step="0.01" min="0.01">
+                            <span class="unit">$</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="r">Risk-Free Rate (r)</label>
+                            <input type="number" id="r" value="0.05" step="0.001" min="0" max="1">
+                            <span class="unit">%</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sigma">Volatility (σ)</label>
+                            <input type="number" id="sigma" value="0.2" step="0.001" min="0" max="2">
+                            <span class="unit">%</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="t">Time to Maturity (T)</label>
+                            <input type="number" id="t" value="1.0" step="0.01" min="0.01">
+                            <span class="unit">years</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="steps">Time Steps</label>
+                            <input type="number" id="steps" value="252" step="1" min="1">
+                            <span class="unit">steps</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="paths">Monte Carlo Paths</label>
+                            <select id="paths">
+                                <option value="100000">100,000</option>
+                                <option value="500000">500,000</option>
+                                <option value="1000000" selected>1,000,000</option>
+                                <option value="5000000">5,000,000</option>
+                                <option value="10000000">10,000,000</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="calculateBtn" class="btn btn-primary">
+                            <i class="fas fa-calculator"></i> Calculate Prices
+                        </button>
+                        <button id="resetBtn" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section">
+                <div class="card">
+                    <h2><i class="fas fa-chart-bar"></i> Results</h2>
+                    <div id="loading" class="loading hidden">
+                        <div class="spinner"></div>
+                        <p>Calculating prices...</p>
+                    </div>
+                    
+                    <div id="results" class="results hidden">
+                        <!-- Call Option Results -->
+                        <div class="option-result">
+                            <h3><i class="fas fa-arrow-up"></i> Call Option</h3>
+                            <div class="result-grid">
+                                <div class="result-item">
+                                    <label>Monte Carlo Price</label>
+                                    <div class="price-value" id="mc-call-price">-</div>
+                                    <div class="error-bar" id="mc-call-error">± -</div>
+                                </div>
+                                <div class="result-item">
+                                    <label>Black-Scholes Price</label>
+                                    <div class="price-value" id="bs-call-price">-</div>
+                                </div>
+                                <div class="result-item">
+                                    <label>Relative Error</label>
+                                    <div class="error-value" id="call-error">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Put Option Results -->
+                        <div class="option-result">
+                            <h3><i class="fas fa-arrow-down"></i> Put Option</h3>
+                            <div class="result-grid">
+                                <div class="result-item">
+                                    <label>Monte Carlo Price</label>
+                                    <div class="price-value" id="mc-put-price">-</div>
+                                    <div class="error-bar" id="mc-put-error">± -</div>
+                                </div>
+                                <div class="result-item">
+                                    <label>Black-Scholes Price</label>
+                                    <div class="price-value" id="bs-put-price">-</div>
+                                </div>
+                                <div class="result-item">
+                                    <label>Relative Error</label>
+                                    <div class="error-value" id="put-error">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Performance Metrics -->
+                        <div class="performance-metrics">
+                            <h3><i class="fas fa-tachometer-alt"></i> Performance</h3>
+                            <div class="metrics-grid">
+                                <div class="metric-item">
+                                    <label>Execution Time</label>
+                                    <div class="metric-value" id="execution-time">-</div>
+                                </div>
+                                <div class="metric-item">
+                                    <label>Paths per Second</label>
+                                    <div class="metric-value" id="paths-per-second">-</div>
+                                </div>
+                                <div class="metric-item">
+                                    <label>Standard Error (Call)</label>
+                                    <div class="metric-value" id="call-stderr">-</div>
+                                </div>
+                                <div class="metric-item">
+                                    <label>Standard Error (Put)</label>
+                                    <div class="metric-value" id="put-stderr">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Information Section -->
+            <section class="info-section">
+                <div class="card">
+                    <h2><i class="fas fa-info-circle"></i> About</h2>
+                    <div class="info-content">
+                        <p>This simulator uses Monte Carlo methods to price European call and put options, comparing results with the Black-Scholes closed-form solution.</p>
+                        
+                        <h3>Mathematical Foundation</h3>
+                        <ul>
+                            <li><strong>Geometric Brownian Motion:</strong> S_{t+1} = S_t × exp((r - 0.5σ²)dt + σ√dt×Z)</li>
+                            <li><strong>Call Option:</strong> C = e^(-rT) × E[max(S_T - K, 0)]</li>
+                            <li><strong>Put Option:</strong> P = e^(-rT) × E[max(K - S_T, 0)]</li>
+                        </ul>
+
+                        <h3>Features</h3>
+                        <ul>
+                            <li>High-precision Monte Carlo simulation</li>
+                            <li>Statistical error analysis</li>
+                            <li>Real-time performance metrics</li>
+                            <li>Risk-neutral pricing framework</li>
+                        </ul>
+
+                        <div class="disclaimer">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Disclaimer</h3>
+                            <p><strong>Educational Use Only:</strong> This tool is for educational and research purposes only. It is not intended for commercial trading or investment decisions. Always consult with qualified financial professionals for investment advice.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Monte Carlo Option Pricing Simulator. Built with C++ and Web Technologies.</p>
+        </footer>
+    </div>
+
+    <script src="js/black-scholes.js"></script>
+    <script src="js/monte-carlo.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

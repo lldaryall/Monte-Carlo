@@ -4,7 +4,7 @@ A high-performance C++ implementation of Monte Carlo simulation for European opt
 
 ## 🌐 Live Demo
 
-**[Try the Web Interface](https://lldaryall.github.io/Monte-Carlo/mc_option_pricer/web/)** - Interactive option pricing calculator with real-time Monte Carlo simulation.
+**[Try the Web Interface](https://lldaryall.github.io/Monte-Carlo/)** - Interactive option pricing calculator with real-time Monte Carlo simulation.
 
 ## Features
 
@@ -45,7 +45,7 @@ mc_option_pricer/
 
 ### Web Interface (Recommended)
 
-1. Visit the [live demo](https://lldaryall.github.io/Monte-Carlo/mc_option_pricer/web/)
+1. Visit the [live demo](https://lldaryall.github.io/Monte-Carlo/)
 2. Enter your option parameters
 3. Click "Calculate Prices" to run the simulation
 4. View results with statistical analysis
