@@ -89,8 +89,8 @@ class OptionPricingApp {
             const params = this.getInputParameters();
             
             // Calculate Black-Scholes prices
-            const bsCall = bsCall(params.S0, params.K, params.r, params.sigma, params.T);
-            const bsPut = bsPut(params.S0, params.K, params.r, params.sigma, params.T);
+            const bsCallPrice = bsCall(params.S0, params.K, params.r, params.sigma, params.T);
+            const bsPutPrice = bsPut(params.S0, params.K, params.r, params.sigma, params.T);
             
             // Run Monte Carlo simulations
             const startTime = performance.now();
@@ -104,8 +104,8 @@ class OptionPricingApp {
             
             // Display results
             this.displayResults({
-                bsCall,
-                bsPut,
+                bsCall: bsCallPrice,
+                bsPut: bsPutPrice,
                 mcCall: mcCallResult,
                 mcPut: mcPutResult,
                 executionTime: totalTime
