@@ -124,7 +124,7 @@ class OptionPricingChart {
                             },
                             color: '#64748b'
                         },
-                        beginAtZero: true,
+                        beginAtZero: false, // Don't force zero start
                         grid: {
                             color: 'rgba(148, 163, 184, 0.2)',
                             drawBorder: false
@@ -165,6 +165,19 @@ class OptionPricingChart {
         this.chart.data.datasets[1].data = [bsCall, 0]; // Black-Scholes Call
         this.chart.data.datasets[2].data = [0, mcPut.price]; // Monte Carlo Put
         this.chart.data.datasets[3].data = [0, bsPut]; // Black-Scholes Put
+
+        // Calculate dynamic scale range
+        const allValues = [mcCall.price, bsCall, mcPut.price, bsPut].filter(v => v > 0);
+        if (allValues.length > 0) {
+            const minValue = Math.min(...allValues);
+            const maxValue = Math.max(...allValues);
+            const range = maxValue - minValue;
+            const padding = range * 0.1; // 10% padding
+            
+            // Update Y-axis scale
+            this.chart.options.scales.y.min = Math.max(0, minValue - padding);
+            this.chart.options.scales.y.max = maxValue + padding;
+        }
 
         // Update the chart
         this.chart.update('active');

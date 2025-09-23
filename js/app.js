@@ -72,6 +72,13 @@ class OptionPricingApp {
         const min = parseFloat(input.min) || 0;
         const max = parseFloat(input.max) || Infinity;
         
+        // Allow empty values (show placeholders)
+        if (input.value === '') {
+            input.style.borderColor = '#e2e8f0';
+            this.calculateBtn.disabled = true;
+            return;
+        }
+        
         if (isNaN(value) || value < min || value > max) {
             input.style.borderColor = '#e53e3e';
             this.calculateBtn.disabled = true;
@@ -122,12 +129,12 @@ class OptionPricingApp {
 
     getInputParameters() {
         return {
-            S0: parseFloat(this.s0Input.value),
-            K: parseFloat(this.kInput.value),
-            r: parseFloat(this.rInput.value) / 100, // Convert percentage to decimal
-            sigma: parseFloat(this.sigmaInput.value) / 100, // Convert percentage to decimal
-            T: parseFloat(this.tInput.value),
-            steps: parseInt(this.stepsInput.value),
+            S0: parseFloat(this.s0Input.value) || 100,
+            K: parseFloat(this.kInput.value) || 100,
+            r: (parseFloat(this.rInput.value) || 5) / 100, // Convert percentage to decimal
+            sigma: (parseFloat(this.sigmaInput.value) || 20) / 100, // Convert percentage to decimal
+            T: parseFloat(this.tInput.value) || 1.0,
+            steps: parseInt(this.stepsInput.value) || 1,
             nPaths: parseInt(this.pathsSelect.value)
         };
     }
@@ -202,13 +209,13 @@ class OptionPricingApp {
     }
 
     resetForm() {
-        // Reset to zero values
-        this.s0Input.value = '0';
-        this.kInput.value = '0';
-        this.rInput.value = '0';
-        this.sigmaInput.value = '0';
-        this.tInput.value = '0';
-        this.stepsInput.value = '0';
+        // Clear all input values to show placeholders
+        this.s0Input.value = '';
+        this.kInput.value = '';
+        this.rInput.value = '';
+        this.sigmaInput.value = '';
+        this.tInput.value = '';
+        this.stepsInput.value = '';
         this.pathsSelect.value = '100000';
         
         // Reset styling
