@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -161,34 +160,6 @@
                 </div>
             </section>
 
-            <!-- Chart Section -->
-            <section class="chart-section">
-                <div class="card">
-                    <h2><i class="fas fa-chart-line"></i> Results Visualization</h2>
-                    <div class="chart-controls">
-                        <div class="control-group">
-                            <button id="showAllBtn" class="btn btn-small btn-primary">
-                                <i class="fas fa-eye"></i> Show All
-                            </button>
-                            <button id="hideAllBtn" class="btn btn-small btn-secondary">
-                                <i class="fas fa-eye-slash"></i> Hide All
-                            </button>
-                            <button id="showCallOnlyBtn" class="btn btn-small btn-info">
-                                <i class="fas fa-chart-line"></i> Call Only
-                            </button>
-                            <button id="showPutOnlyBtn" class="btn btn-small btn-success">
-                                <i class="fas fa-chart-line"></i> Put Only
-                            </button>
-                            <button id="showConvergenceBtn" class="btn btn-small btn-warning">
-                                <i class="fas fa-convergence"></i> Convergence
-                            </button>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="resultsChart"></canvas>
-                    </div>
-                </div>
-            </section>
 
             <!-- Information Section -->
             <section class="info-section">
@@ -229,7 +200,6 @@
 
     <script src="js/black-scholes.js"></script>
     <script src="js/monte-carlo.js"></script>
-    <script src="js/chart.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
