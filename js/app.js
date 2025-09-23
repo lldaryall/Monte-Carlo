@@ -159,6 +159,11 @@ class OptionPricingApp {
         this.callStderr.textContent = `${mcCall.standardError.toFixed(6)}`;
         this.putStderr.textContent = `${mcPut.standardError.toFixed(6)}`;
         
+        // Update chart
+        if (window.optionChart) {
+            window.optionChart.updateChart(results);
+        }
+        
         this.showResults();
     }
 
@@ -215,6 +220,11 @@ class OptionPricingApp {
         // Hide results
         this.resultsDiv.classList.add('hidden');
         this.loadingDiv.classList.add('hidden');
+        
+        // Clear chart
+        if (window.optionChart) {
+            window.optionChart.clearChart();
+        }
         
         // Enable form
         this.enableForm();

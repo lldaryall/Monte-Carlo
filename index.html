@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
@@ -160,6 +161,34 @@
                 </div>
             </section>
 
+            <!-- Chart Section -->
+            <section class="chart-section">
+                <div class="card">
+                    <h2><i class="fas fa-chart-line"></i> Results Visualization</h2>
+                    <div class="chart-container">
+                        <canvas id="resultsChart"></canvas>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #3b82f6;"></div>
+                            <span>Monte Carlo Call</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ef4444;"></div>
+                            <span>Black-Scholes Call</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #10b981;"></div>
+                            <span>Monte Carlo Put</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #f59e0b;"></div>
+                            <span>Black-Scholes Put</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Information Section -->
             <section class="info-section">
                 <div class="card">
@@ -199,6 +228,7 @@
 
     <script src="js/black-scholes.js"></script>
     <script src="js/monte-carlo.js"></script>
+    <script src="js/chart.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
