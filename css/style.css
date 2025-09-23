@@ -492,6 +492,11 @@ body {
     color: white;
 }
 
+.btn-small.btn-warning {
+    background: #f59e0b;
+    color: white;
+}
+
 .chart-container {
     position: relative;
     height: 400px;

@@ -115,7 +115,8 @@ class OptionPricingApp {
                 bsPut: bsPutPrice,
                 mcCall: mcCallResult,
                 mcPut: mcPutResult,
-                executionTime: totalTime
+                executionTime: totalTime,
+                params: params
             });
             
         } catch (error) {

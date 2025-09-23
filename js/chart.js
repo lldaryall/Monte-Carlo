@@ -23,54 +23,56 @@ class OptionPricingChart {
         this.chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Call Option', 'Put Option'],
+                labels: [],
                 datasets: [
                     {
                         label: 'Monte Carlo Call',
-                        data: [0, null],
+                        data: [],
                         borderColor: 'rgba(59, 130, 246, 1)',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderWidth: 3,
+                        borderWidth: 2,
                         fill: false,
-                        tension: 0,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
+                        tension: 0.1,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
                         hidden: false
                     },
                     {
-                        label: 'Black-Scholes Call',
-                        data: [0, null],
+                        label: 'Black-Scholes Call (Target)',
+                        data: [],
                         borderColor: 'rgba(239, 68, 68, 1)',
                         backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        borderWidth: 3,
+                        borderWidth: 2,
+                        borderDash: [5, 5],
                         fill: false,
                         tension: 0,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
                         hidden: false
                     },
                     {
                         label: 'Monte Carlo Put',
-                        data: [null, 0],
+                        data: [],
                         borderColor: 'rgba(16, 185, 129, 1)',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 3,
+                        borderWidth: 2,
                         fill: false,
-                        tension: 0,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
+                        tension: 0.1,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
                         hidden: false
                     },
                     {
-                        label: 'Black-Scholes Put',
-                        data: [null, 0],
+                        label: 'Black-Scholes Put (Target)',
+                        data: [],
                         borderColor: 'rgba(245, 158, 11, 1)',
                         backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                        borderWidth: 3,
+                        borderWidth: 2,
+                        borderDash: [5, 5],
                         fill: false,
                         tension: 0,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
                         hidden: false
                     }
                 ]
@@ -81,7 +83,7 @@ class OptionPricingChart {
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Option Pricing Comparison: Monte Carlo vs Black-Scholes',
+                        text: 'Monte Carlo Convergence to Black-Scholes',
                         font: {
                             size: 16,
                             weight: 'bold'
@@ -131,21 +133,26 @@ class OptionPricingChart {
                     x: {
                         title: {
                             display: true,
-                            text: 'Option Type',
+                            text: 'Number of Paths',
                             font: {
                                 size: 14,
                                 weight: 'bold'
                             },
                             color: '#64748b'
                         },
+                        type: 'logarithmic',
                         grid: {
-                            display: false
+                            color: 'rgba(148, 163, 184, 0.2)',
+                            drawBorder: false
                         },
                         ticks: {
                             color: '#64748b',
                             font: {
                                 size: 12,
                                 weight: '500'
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
                             }
                         }
                     },
@@ -159,7 +166,7 @@ class OptionPricingChart {
                             },
                             color: '#64748b'
                         },
-                        beginAtZero: false, // Don't force zero start
+                        beginAtZero: false,
                         grid: {
                             color: 'rgba(148, 163, 184, 0.2)',
                             drawBorder: false
@@ -194,39 +201,119 @@ class OptionPricingChart {
         }
 
         console.log('Updating chart with results:', results);
-        const { bsCall, bsPut, mcCall, mcPut } = results;
+        const { bsCall, bsPut, mcCall, mcPut, params } = results;
 
-        // Update the data for line chart
-        this.chart.data.datasets[0].data = [mcCall.price, null]; // Monte Carlo Call
-        this.chart.data.datasets[1].data = [bsCall, null]; // Black-Scholes Call
-        this.chart.data.datasets[2].data = [null, mcPut.price]; // Monte Carlo Put
-        this.chart.data.datasets[3].data = [null, bsPut]; // Black-Scholes Put
+        // Generate convergence data points
+        const pathCounts = [100, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000];
+        const convergenceData = this.generateConvergenceData(params, pathCounts, bsCall, bsPut);
+
+        // Update chart data
+        this.chart.data.labels = pathCounts.map(count => count.toLocaleString());
+        
+        // Monte Carlo Call convergence
+        this.chart.data.datasets[0].data = convergenceData.mcCall;
+        
+        // Black-Scholes Call target (horizontal line)
+        this.chart.data.datasets[1].data = new Array(pathCounts.length).fill(bsCall);
+        
+        // Monte Carlo Put convergence
+        this.chart.data.datasets[2].data = convergenceData.mcPut;
+        
+        // Black-Scholes Put target (horizontal line)
+        this.chart.data.datasets[3].data = new Array(pathCounts.length).fill(bsPut);
 
         // Calculate dynamic scale range
-        const allValues = [mcCall.price, bsCall, mcPut.price, bsPut].filter(v => v > 0);
-        if (allValues.length > 0) {
-            const minValue = Math.min(...allValues);
-            const maxValue = Math.max(...allValues);
-            const range = maxValue - minValue;
-            const padding = range * 0.15; // 15% padding for better visualization
-            
-            // Update Y-axis scale
-            this.chart.options.scales.y.min = Math.max(0, minValue - padding);
-            this.chart.options.scales.y.max = maxValue + padding;
-        }
+        const allValues = [...convergenceData.mcCall, ...convergenceData.mcPut, bsCall, bsPut];
+        const minValue = Math.min(...allValues);
+        const maxValue = Math.max(...allValues);
+        const range = maxValue - minValue;
+        const padding = range * 0.1; // 10% padding
+        
+        // Update Y-axis scale
+        this.chart.options.scales.y.min = Math.max(0, minValue - padding);
+        this.chart.options.scales.y.max = maxValue + padding;
 
         // Update the chart
         this.chart.update('active');
     }
 
+    generateConvergenceData(params, pathCounts, bsCall, bsPut) {
+        const mcCallData = [];
+        const mcPutData = [];
+        
+        // Use the same parameters but with different path counts
+        for (const pathCount of pathCounts) {
+            // Run Monte Carlo simulation for this path count
+            const mcResult = this.runMonteCarloForPaths(params, pathCount);
+            mcCallData.push(mcResult.callPrice);
+            mcPutData.push(mcResult.putPrice);
+        }
+        
+        return {
+            mcCall: mcCallData,
+            mcPut: mcPutData
+        };
+    }
+
+    runMonteCarloForPaths(params, pathCount) {
+        // Simplified Monte Carlo for convergence testing
+        const { S0, K, r, sigma, T } = params;
+        const discountFactor = Math.exp(-r * T);
+        
+        let callSum = 0;
+        let putSum = 0;
+        let callSumSquared = 0;
+        let putSumSquared = 0;
+        
+        for (let i = 0; i < pathCount; i++) {
+            // Generate final stock price using GBM
+            const Z = this.generateNormalRandom();
+            const driftTerm = (r - 0.5 * sigma * sigma) * T;
+            const diffusionTerm = sigma * Math.sqrt(T) * Z;
+            const finalPrice = S0 * Math.exp(driftTerm + diffusionTerm);
+            
+            // Calculate payoffs
+            const callPayoff = Math.max(finalPrice - K, 0);
+            const putPayoff = Math.max(K - finalPrice, 0);
+            
+            const discountedCall = discountFactor * callPayoff;
+            const discountedPut = discountFactor * putPayoff;
+            
+            callSum += discountedCall;
+            putSum += discountedPut;
+            callSumSquared += discountedCall * discountedCall;
+            putSumSquared += discountedPut * discountedPut;
+        }
+        
+        return {
+            callPrice: callSum / pathCount,
+            putPrice: putSum / pathCount
+        };
+    }
+
+    generateNormalRandom() {
+        // Box-Muller transform
+        if (this.spare !== undefined) {
+            const temp = this.spare;
+            delete this.spare;
+            return temp;
+        }
+        const u1 = Math.random();
+        const u2 = Math.random();
+        const mag = Math.sqrt(-2 * Math.log(u1));
+        this.spare = mag * Math.cos(2 * Math.PI * u2);
+        return mag * Math.sin(2 * Math.PI * u2);
+    }
+
     clearChart() {
         if (!this.chart) return;
 
-        // Reset all data to zero
-        this.chart.data.datasets[0].data = [0, null]; // Monte Carlo Call
-        this.chart.data.datasets[1].data = [0, null]; // Black-Scholes Call
-        this.chart.data.datasets[2].data = [null, 0]; // Monte Carlo Put
-        this.chart.data.datasets[3].data = [null, 0]; // Black-Scholes Put
+        // Reset all data to empty
+        this.chart.data.labels = [];
+        this.chart.data.datasets[0].data = []; // Monte Carlo Call
+        this.chart.data.datasets[1].data = []; // Black-Scholes Call
+        this.chart.data.datasets[2].data = []; // Monte Carlo Put
+        this.chart.data.datasets[3].data = []; // Black-Scholes Put
 
         // Reset scale to default
         this.chart.options.scales.y.min = 0;
