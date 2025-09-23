@@ -17,6 +17,8 @@ class OptionPricingChart {
             console.error('Chart canvas not found');
             return;
         }
+        
+        console.log('Initializing chart...');
 
         this.chart = new Chart(ctx, {
             type: 'bar',
@@ -24,7 +26,7 @@ class OptionPricingChart {
                 labels: ['Call Option', 'Put Option'],
                 datasets: [
                     {
-                        label: 'Monte Carlo Call',
+                        label: 'Monte Carlo',
                         data: [0, 0],
                         backgroundColor: 'rgba(59, 130, 246, 0.8)',
                         borderColor: 'rgba(59, 130, 246, 1)',
@@ -33,28 +35,10 @@ class OptionPricingChart {
                         borderSkipped: false,
                     },
                     {
-                        label: 'Black-Scholes Call',
+                        label: 'Black-Scholes',
                         data: [0, 0],
                         backgroundColor: 'rgba(239, 68, 68, 0.8)',
                         borderColor: 'rgba(239, 68, 68, 1)',
-                        borderWidth: 2,
-                        borderRadius: 4,
-                        borderSkipped: false,
-                    },
-                    {
-                        label: 'Monte Carlo Put',
-                        data: [0, 0],
-                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
-                        borderColor: 'rgba(16, 185, 129, 1)',
-                        borderWidth: 2,
-                        borderRadius: 4,
-                        borderSkipped: false,
-                    },
-                    {
-                        label: 'Black-Scholes Put',
-                        data: [0, 0],
-                        backgroundColor: 'rgba(245, 158, 11, 0.8)',
-                        borderColor: 'rgba(245, 158, 11, 1)',
                         borderWidth: 2,
                         borderRadius: 4,
                         borderSkipped: false,
@@ -158,13 +142,12 @@ class OptionPricingChart {
             return;
         }
 
+        console.log('Updating chart with results:', results);
         const { bsCall, bsPut, mcCall, mcPut } = results;
 
-        // Update the data
-        this.chart.data.datasets[0].data = [mcCall.price, 0]; // Monte Carlo Call
-        this.chart.data.datasets[1].data = [bsCall, 0]; // Black-Scholes Call
-        this.chart.data.datasets[2].data = [0, mcPut.price]; // Monte Carlo Put
-        this.chart.data.datasets[3].data = [0, bsPut]; // Black-Scholes Put
+        // Update the data - use proper structure for grouped bars
+        this.chart.data.datasets[0].data = [mcCall.price, mcPut.price]; // Monte Carlo
+        this.chart.data.datasets[1].data = [bsCall, bsPut]; // Black-Scholes
 
         // Calculate dynamic scale range
         const allValues = [mcCall.price, bsCall, mcPut.price, bsPut].filter(v => v > 0);
@@ -174,7 +157,7 @@ class OptionPricingChart {
             const range = maxValue - minValue;
             const padding = range * 0.1; // 10% padding
             
-            // Update Y-axis scale
+            // Update Y-axis scale by recreating the chart with new options
             this.chart.options.scales.y.min = Math.max(0, minValue - padding);
             this.chart.options.scales.y.max = maxValue + padding;
         }
@@ -187,9 +170,12 @@ class OptionPricingChart {
         if (!this.chart) return;
 
         // Reset all data to zero
-        this.chart.data.datasets.forEach(dataset => {
-            dataset.data = [0, 0];
-        });
+        this.chart.data.datasets[0].data = [0, 0]; // Monte Carlo
+        this.chart.data.datasets[1].data = [0, 0]; // Black-Scholes
+
+        // Reset scale to default
+        this.chart.options.scales.y.min = 0;
+        this.chart.options.scales.y.max = 10;
 
         this.chart.update('active');
     }
