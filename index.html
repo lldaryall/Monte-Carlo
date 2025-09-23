@@ -165,18 +165,24 @@
             <section class="chart-section">
                 <div class="card">
                     <h2><i class="fas fa-chart-line"></i> Results Visualization</h2>
+                    <div class="chart-controls">
+                        <div class="control-group">
+                            <button id="showAllBtn" class="btn btn-small btn-primary">
+                                <i class="fas fa-eye"></i> Show All
+                            </button>
+                            <button id="hideAllBtn" class="btn btn-small btn-secondary">
+                                <i class="fas fa-eye-slash"></i> Hide All
+                            </button>
+                            <button id="showCallOnlyBtn" class="btn btn-small btn-info">
+                                <i class="fas fa-chart-line"></i> Call Only
+                            </button>
+                            <button id="showPutOnlyBtn" class="btn btn-small btn-success">
+                                <i class="fas fa-chart-line"></i> Put Only
+                            </button>
+                        </div>
+                    </div>
                     <div class="chart-container">
                         <canvas id="resultsChart"></canvas>
-                    </div>
-                    <div class="chart-legend">
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #3b82f6;"></div>
-                            <span>Monte Carlo</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #ef4444;"></div>
-                            <span>Black-Scholes</span>
-                        </div>
                     </div>
                 </div>
             </section>

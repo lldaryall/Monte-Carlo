@@ -440,6 +440,58 @@ body {
     margin-bottom: 2rem;
 }
 
+.chart-controls {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.control-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.btn-small:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-small.btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-small.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-small.btn-info {
+    background: #06b6d4;
+    color: white;
+}
+
+.btn-small.btn-success {
+    background: #10b981;
+    color: white;
+}
+
 .chart-container {
     position: relative;
     height: 400px;

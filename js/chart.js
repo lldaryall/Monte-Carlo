@@ -21,27 +21,57 @@ class OptionPricingChart {
         console.log('Initializing chart...');
 
         this.chart = new Chart(ctx, {
-            type: 'bar',
+            type: 'line',
             data: {
                 labels: ['Call Option', 'Put Option'],
                 datasets: [
                     {
-                        label: 'Monte Carlo',
-                        data: [0, 0],
-                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                        label: 'Monte Carlo Call',
+                        data: [0, null],
                         borderColor: 'rgba(59, 130, 246, 1)',
-                        borderWidth: 2,
-                        borderRadius: 4,
-                        borderSkipped: false,
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        hidden: false
                     },
                     {
-                        label: 'Black-Scholes',
-                        data: [0, 0],
-                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                        label: 'Black-Scholes Call',
+                        data: [0, null],
                         borderColor: 'rgba(239, 68, 68, 1)',
-                        borderWidth: 2,
-                        borderRadius: 4,
-                        borderSkipped: false,
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        hidden: false
+                    },
+                    {
+                        label: 'Monte Carlo Put',
+                        data: [null, 0],
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        hidden: false
+                    },
+                    {
+                        label: 'Black-Scholes Put',
+                        data: [null, 0],
+                        borderColor: 'rgba(245, 158, 11, 1)',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 3,
+                        fill: false,
+                        tension: 0,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        hidden: false
                     }
                 ]
             },
@@ -59,7 +89,28 @@ class OptionPricingChart {
                         color: '#1e293b'
                     },
                     legend: {
-                        display: false // We have custom legend in HTML
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: '500'
+                            }
+                        },
+                        onClick: (e, legendItem, legend) => {
+                            const index = legendItem.datasetIndex;
+                            const ci = legend.chart;
+                            if (ci.isDatasetVisible(index)) {
+                                ci.hide(index);
+                                legendItem.hidden = true;
+                            } else {
+                                ci.show(index);
+                                legendItem.hidden = false;
+                            }
+                        }
                     },
                     tooltip: {
                         backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -145,9 +196,11 @@ class OptionPricingChart {
         console.log('Updating chart with results:', results);
         const { bsCall, bsPut, mcCall, mcPut } = results;
 
-        // Update the data - use proper structure for grouped bars
-        this.chart.data.datasets[0].data = [mcCall.price, mcPut.price]; // Monte Carlo
-        this.chart.data.datasets[1].data = [bsCall, bsPut]; // Black-Scholes
+        // Update the data for line chart
+        this.chart.data.datasets[0].data = [mcCall.price, null]; // Monte Carlo Call
+        this.chart.data.datasets[1].data = [bsCall, null]; // Black-Scholes Call
+        this.chart.data.datasets[2].data = [null, mcPut.price]; // Monte Carlo Put
+        this.chart.data.datasets[3].data = [null, bsPut]; // Black-Scholes Put
 
         // Calculate dynamic scale range
         const allValues = [mcCall.price, bsCall, mcPut.price, bsPut].filter(v => v > 0);
@@ -155,9 +208,9 @@ class OptionPricingChart {
             const minValue = Math.min(...allValues);
             const maxValue = Math.max(...allValues);
             const range = maxValue - minValue;
-            const padding = range * 0.1; // 10% padding
+            const padding = range * 0.15; // 15% padding for better visualization
             
-            // Update Y-axis scale by recreating the chart with new options
+            // Update Y-axis scale
             this.chart.options.scales.y.min = Math.max(0, minValue - padding);
             this.chart.options.scales.y.max = maxValue + padding;
         }
@@ -170,8 +223,10 @@ class OptionPricingChart {
         if (!this.chart) return;
 
         // Reset all data to zero
-        this.chart.data.datasets[0].data = [0, 0]; // Monte Carlo
-        this.chart.data.datasets[1].data = [0, 0]; // Black-Scholes
+        this.chart.data.datasets[0].data = [0, null]; // Monte Carlo Call
+        this.chart.data.datasets[1].data = [0, null]; // Black-Scholes Call
+        this.chart.data.datasets[2].data = [null, 0]; // Monte Carlo Put
+        this.chart.data.datasets[3].data = [null, 0]; // Black-Scholes Put
 
         // Reset scale to default
         this.chart.options.scales.y.min = 0;
@@ -200,6 +255,66 @@ let optionChart = null;
 // Initialize chart when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     optionChart = new OptionPricingChart();
+    
+    // Add chart control event listeners
+    const showAllBtn = document.getElementById('showAllBtn');
+    const hideAllBtn = document.getElementById('hideAllBtn');
+    const showCallOnlyBtn = document.getElementById('showCallOnlyBtn');
+    const showPutOnlyBtn = document.getElementById('showPutOnlyBtn');
+    
+    if (showAllBtn) {
+        showAllBtn.addEventListener('click', () => {
+            if (optionChart && optionChart.chart) {
+                optionChart.chart.data.datasets.forEach((dataset, index) => {
+                    optionChart.chart.show(index);
+                });
+                optionChart.chart.update();
+            }
+        });
+    }
+    
+    if (hideAllBtn) {
+        hideAllBtn.addEventListener('click', () => {
+            if (optionChart && optionChart.chart) {
+                optionChart.chart.data.datasets.forEach((dataset, index) => {
+                    optionChart.chart.hide(index);
+                });
+                optionChart.chart.update();
+            }
+        });
+    }
+    
+    if (showCallOnlyBtn) {
+        showCallOnlyBtn.addEventListener('click', () => {
+            if (optionChart && optionChart.chart) {
+                // Show only call options (datasets 0 and 1)
+                optionChart.chart.data.datasets.forEach((dataset, index) => {
+                    if (index === 0 || index === 1) {
+                        optionChart.chart.show(index);
+                    } else {
+                        optionChart.chart.hide(index);
+                    }
+                });
+                optionChart.chart.update();
+            }
+        });
+    }
+    
+    if (showPutOnlyBtn) {
+        showPutOnlyBtn.addEventListener('click', () => {
+            if (optionChart && optionChart.chart) {
+                // Show only put options (datasets 2 and 3)
+                optionChart.chart.data.datasets.forEach((dataset, index) => {
+                    if (index === 2 || index === 3) {
+                        optionChart.chart.show(index);
+                    } else {
+                        optionChart.chart.hide(index);
+                    }
+                });
+                optionChart.chart.update();
+            }
+        });
+    }
 });
 
 // Export for use in other modules
