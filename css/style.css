@@ -13,27 +13,9 @@ body {
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
-}
-
-/* Animated background particles */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-    animation: backgroundShift 20s ease-in-out infinite;
-    z-index: -1;
-}
-
-@keyframes backgroundShift {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.1); }
+    /* Optimize for smooth scrolling */
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
 }
 
 .container {
@@ -56,31 +38,18 @@ body::before {
     font-size: 3.5rem;
     font-weight: 800;
     margin-bottom: 15px;
-    background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
-    background-size: 300% 300%;
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4, #45b7d1);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    animation: gradientShift 3s ease-in-out infinite;
     text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
     letter-spacing: -0.02em;
-}
-
-@keyframes gradientShift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
 }
 
 .header-content h1 i {
     margin-right: 20px;
     color: #ffd700;
     filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
 }
 
 .subtitle {
@@ -113,21 +82,20 @@ body::before {
     background: #4ecdc4;
     border-radius: 50%;
     box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
-    animation: pulse 2s ease-in-out infinite;
 }
 
 /* Card Styles */
 .card {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 24px;
     padding: 40px;
     margin-bottom: 30px;
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     position: relative;
     overflow: hidden;
 }
@@ -154,9 +122,10 @@ body::before {
     font-size: 1.8rem;
     font-weight: 700;
     margin-bottom: 25px;
-    color: #f8fafc;
+    color: #ffffff;
     text-align: center;
     position: relative;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .card-title::after {
@@ -180,10 +149,11 @@ body::before {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #e2e8f0;
+    color: #ffffff;
     font-size: 0.95rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .form-row {
@@ -196,30 +166,27 @@ body::before {
 input[type="number"], select {
     width: 100%;
     padding: 16px 20px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
     font-size: 1rem;
     font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+    backdrop-filter: blur(4px);
 }
 
 input[type="number"]:focus, select:focus {
     outline: none;
     border-color: #4ecdc4;
-    background: rgba(255, 255, 255, 0.1);
-    box-shadow: 
-        0 0 0 4px rgba(78, 205, 196, 0.1),
-        0 4px 12px rgba(0, 0, 0, 0.2);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
 }
 
 input[type="number"]::placeholder {
-    color: #94a3b8;
+    color: #cbd5e1;
     font-style: italic;
-    opacity: 0.7;
+    opacity: 0.8;
 }
 
 /* Button Styles */
@@ -230,27 +197,11 @@ input[type="number"]::placeholder {
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(10px);
-}
-
-.btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-}
-
-.btn:hover::before {
-    left: 100%;
 }
 
 .btn-primary {
@@ -260,8 +211,8 @@ input[type="number"]::placeholder {
 }
 
 .btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
 }
 
 .btn-secondary {
@@ -271,8 +222,8 @@ input[type="number"]::placeholder {
 }
 
 .btn-secondary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(78, 205, 196, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(78, 205, 196, 0.5);
 }
 
 .btn:disabled {
@@ -326,10 +277,11 @@ input[type="number"]::placeholder {
     font-size: 1.4rem;
     font-weight: 600;
     margin-bottom: 20px;
-    color: #e2e8f0;
+    color: #ffffff;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .result-grid {
@@ -350,23 +302,24 @@ input[type="number"]::placeholder {
     display: block;
     font-size: 0.9rem;
     font-weight: 600;
-    color: #94a3b8;
+    color: #e2e8f0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 8px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .price-value {
     font-size: 1.6rem;
     font-weight: 700;
-    color: #f8fafc;
+    color: #ffffff;
     margin-bottom: 5px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .error-bar {
     font-size: 0.9rem;
-    color: #94a3b8;
+    color: #cbd5e1;
     font-weight: 500;
 }
 
@@ -417,16 +370,18 @@ input[type="number"]::placeholder {
 .metric-label {
     font-size: 0.9rem;
     font-weight: 600;
-    color: #94a3b8;
+    color: #e2e8f0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 8px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .metric-value {
     font-size: 1.4rem;
     font-weight: 700;
-    color: #f8fafc;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Loading Animation */
@@ -457,7 +412,8 @@ input[type="number"]::placeholder {
 .loading p {
     font-size: 1.2rem;
     font-weight: 500;
-    color: #cbd5e1;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Error Message Styles */
