@@ -351,15 +351,29 @@ input[type="number"]::placeholder {
 
 /* Performance Metrics */
 .performance-metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
     margin-top: 30px;
     padding-top: 30px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.metric {
+.performance-metrics h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #ffffff;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.metric-item {
     text-align: center;
     padding: 20px;
     background: rgba(255, 255, 255, 0.03);
@@ -367,7 +381,8 @@ input[type="number"]::placeholder {
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.metric-label {
+.metric-item label {
+    display: block;
     font-size: 0.9rem;
     font-weight: 600;
     color: #e2e8f0;
@@ -377,7 +392,7 @@ input[type="number"]::placeholder {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.metric-value {
+.metric-item .metric-value {
     font-size: 1.4rem;
     font-weight: 700;
     color: #ffffff;
@@ -476,18 +491,81 @@ input[type="number"]::placeholder {
     }
 }
 
+/* Info Section */
+.info-section {
+    margin-top: 30px;
+}
+
+.info-section h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #ffffff;
+    text-align: center;
+    position: relative;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.info-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+    border-radius: 2px;
+}
+
+.info-content {
+    color: #ffffff;
+    line-height: 1.7;
+}
+
+.info-content p {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.info-content h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 25px 0 15px 0;
+    color: #4ecdc4;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.info-content ul {
+    margin-bottom: 20px;
+    padding-left: 20px;
+}
+
+.info-content li {
+    font-size: 1rem;
+    margin-bottom: 8px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.info-content strong {
+    color: #4ecdc4;
+    font-weight: 600;
+}
+
 /* Footer */
 .footer {
     text-align: center;
     margin-top: 50px;
     padding: 30px 0;
-    color: #94a3b8;
+    color: #e2e8f0;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footer p {
     font-size: 0.95rem;
     opacity: 0.8;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Utility Classes */
