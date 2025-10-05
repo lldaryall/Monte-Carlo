@@ -81,15 +81,18 @@ class OptionPricingApp {
         // Allow empty values (show placeholders) - disable button
         if (input.value === '') {
             input.style.borderColor = '#e2e8f0';
+            input.style.boxShadow = 'none';
             this.calculateBtn.disabled = true;
             return;
         }
         
         if (isNaN(value) || value < min || value > max) {
             input.style.borderColor = '#e53e3e';
+            input.style.boxShadow = '0 0 0 3px rgba(229, 62, 62, 0.1)';
             this.calculateBtn.disabled = true;
         } else {
             input.style.borderColor = '#e2e8f0';
+            input.style.boxShadow = 'none';
             // Only enable button if all fields are filled and valid
             this.calculateBtn.disabled = !allFieldsFilled;
         }
@@ -146,10 +149,21 @@ class OptionPricingApp {
             { input: this.stepsInput, name: 'Time Steps' }
         ];
 
-        for (const field of requiredFields) {
-            if (!field.input.value || field.input.value.trim() === '') {
-                throw new Error(`Please enter a value for ${field.name}`);
-            }
+        // Find empty fields
+        const emptyFields = requiredFields.filter(field => !field.input.value || field.input.value.trim() === '');
+        
+        if (emptyFields.length > 0) {
+            // Highlight empty fields in red
+            emptyFields.forEach(field => {
+                field.input.style.borderColor = '#e53e3e';
+                field.input.style.boxShadow = '0 0 0 3px rgba(229, 62, 62, 0.1)';
+            });
+            
+            // Create detailed error message
+            const fieldNames = emptyFields.map(field => field.name).join(', ');
+            const message = `Please fill in the following fields: ${fieldNames}`;
+            
+            throw new Error(message);
         }
 
         // Validate that all values are positive numbers
@@ -181,12 +195,19 @@ class OptionPricingApp {
     displayResults(results) {
         const { bsCall, bsPut, mcCall, mcPut, executionTime } = results;
         
+        // Debug: Log the values being compared
+        console.log('Black-Scholes Call:', bsCall);
+        console.log('Monte Carlo Call:', mcCall.price);
+        console.log('Black-Scholes Put:', bsPut);
+        console.log('Monte Carlo Put:', mcPut.price);
+        
         // Call option results
         this.mcCallPrice.textContent = `$${mcCall.price.toFixed(6)}`;
         this.mcCallError.textContent = `± $${mcCall.standardError.toFixed(6)}`;
         this.bsCallPrice.textContent = `$${bsCall.toFixed(6)}`;
         
         const callErrorPercent = Math.abs(mcCall.price - bsCall) / bsCall * 100;
+        console.log('Call Error Percent:', callErrorPercent);
         this.callError.textContent = `${callErrorPercent.toFixed(4)}%`;
         this.callError.className = this.getErrorClass(callErrorPercent);
         
@@ -196,6 +217,7 @@ class OptionPricingApp {
         this.bsPutPrice.textContent = `$${bsPut.toFixed(6)}`;
         
         const putErrorPercent = Math.abs(mcPut.price - bsPut) / bsPut * 100;
+        console.log('Put Error Percent:', putErrorPercent);
         this.putError.textContent = `${putErrorPercent.toFixed(4)}%`;
         this.putError.className = this.getErrorClass(putErrorPercent);
         
@@ -276,6 +298,7 @@ class OptionPricingApp {
         const inputs = [this.s0Input, this.kInput, this.rInput, this.sigmaInput, this.tInput, this.stepsInput];
         inputs.forEach(input => {
             input.style.borderColor = '#e2e8f0';
+            input.style.boxShadow = 'none';
         });
         
         // Hide results
