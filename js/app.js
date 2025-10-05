@@ -10,6 +10,8 @@ class OptionPricingApp {
         this.initializeElements();
         this.bindEvents();
         this.resetForm();
+        // Initially disable the calculate button since fields are empty
+        this.calculateBtn.disabled = true;
     }
 
     initializeElements() {
@@ -72,7 +74,11 @@ class OptionPricingApp {
         const min = parseFloat(input.min) || 0;
         const max = parseFloat(input.max) || Infinity;
         
-        // Allow empty values (show placeholders)
+        // Check if all required fields have values
+        const requiredFields = [this.s0Input, this.kInput, this.rInput, this.sigmaInput, this.tInput, this.stepsInput];
+        const allFieldsFilled = requiredFields.every(field => field.value && field.value.trim() !== '');
+        
+        // Allow empty values (show placeholders) - disable button
         if (input.value === '') {
             input.style.borderColor = '#e2e8f0';
             this.calculateBtn.disabled = true;
@@ -84,7 +90,8 @@ class OptionPricingApp {
             this.calculateBtn.disabled = true;
         } else {
             input.style.borderColor = '#e2e8f0';
-            this.calculateBtn.disabled = false;
+            // Only enable button if all fields are filled and valid
+            this.calculateBtn.disabled = !allFieldsFilled;
         }
     }
 
@@ -129,13 +136,44 @@ class OptionPricingApp {
     }
 
     getInputParameters() {
+        // Check if any required fields are empty
+        const requiredFields = [
+            { input: this.s0Input, name: 'Initial Stock Price' },
+            { input: this.kInput, name: 'Strike Price' },
+            { input: this.rInput, name: 'Risk-Free Rate' },
+            { input: this.sigmaInput, name: 'Volatility' },
+            { input: this.tInput, name: 'Time to Maturity' },
+            { input: this.stepsInput, name: 'Time Steps' }
+        ];
+
+        for (const field of requiredFields) {
+            if (!field.input.value || field.input.value.trim() === '') {
+                throw new Error(`Please enter a value for ${field.name}`);
+            }
+        }
+
+        // Validate that all values are positive numbers
+        const S0 = parseFloat(this.s0Input.value);
+        const K = parseFloat(this.kInput.value);
+        const r = parseFloat(this.rInput.value);
+        const sigma = parseFloat(this.sigmaInput.value);
+        const T = parseFloat(this.tInput.value);
+        const steps = parseInt(this.stepsInput.value);
+
+        if (isNaN(S0) || S0 <= 0) throw new Error('Initial Stock Price must be a positive number');
+        if (isNaN(K) || K <= 0) throw new Error('Strike Price must be a positive number');
+        if (isNaN(r) || r < 0) throw new Error('Risk-Free Rate must be a non-negative number');
+        if (isNaN(sigma) || sigma < 0) throw new Error('Volatility must be a non-negative number');
+        if (isNaN(T) || T <= 0) throw new Error('Time to Maturity must be a positive number');
+        if (isNaN(steps) || steps <= 0) throw new Error('Time Steps must be a positive number');
+
         return {
-            S0: parseFloat(this.s0Input.value) || 100,
-            K: parseFloat(this.kInput.value) || 100,
-            r: (parseFloat(this.rInput.value) || 5) / 100, // Convert percentage to decimal
-            sigma: (parseFloat(this.sigmaInput.value) || 20) / 100, // Convert percentage to decimal
-            T: parseFloat(this.tInput.value) || 1.0,
-            steps: parseInt(this.stepsInput.value) || 1,
+            S0: S0,
+            K: K,
+            r: r / 100, // Convert percentage to decimal
+            sigma: sigma / 100, // Convert percentage to decimal
+            T: T,
+            steps: steps,
             nPaths: parseInt(this.pathsSelect.value)
         };
     }
@@ -191,8 +229,27 @@ class OptionPricingApp {
     }
 
     showError(message) {
-        // Simple error display - could be enhanced with a proper error modal
-        alert(message);
+        // Create a better error display
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.innerHTML = `
+            <div class="error-content">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.parentElement.remove()" class="error-close">&times;</button>
+            </div>
+        `;
+        
+        // Insert error message at the top of the main content
+        const mainContent = document.querySelector('.main-content');
+        mainContent.insertBefore(errorDiv, mainContent.firstChild);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (errorDiv.parentElement) {
+                errorDiv.remove();
+            }
+        }, 5000);
     }
 
     disableForm() {
@@ -226,8 +283,9 @@ class OptionPricingApp {
         this.loadingDiv.classList.add('hidden');
         
         
-        // Enable form
-        this.enableForm();
+        // Disable form since all fields are empty
+        this.calculateBtn.disabled = true;
+        this.calculateBtn.innerHTML = '<i class="fas fa-calculator"></i> Calculate Prices';
     }
 }
 
