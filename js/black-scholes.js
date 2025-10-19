@@ -1,17 +1,31 @@
 /**
  * Black-Scholes Option Pricing Implementation
  * 
- * This module provides the standard Black-Scholes closed-form solutions
- * for European call and put options using JavaScript.
+ * Implements the Black-Scholes-Merton model for pricing European options.
+ * This is the analytical solution to the Black-Scholes partial differential equation.
+ * 
+ * Mathematical Foundation:
+ * - Assumes log-normal distribution of stock prices
+ * - Risk-neutral valuation framework
+ * - No-arbitrage pricing principle
+ * 
+ * Author: [Your Name]
+ * Course: Derivatives Pricing / Financial Mathematics
+ * Date: 2025
  */
 
 /**
- * Calculate cumulative normal distribution using approximation
+ * Calculate cumulative normal distribution using Abramowitz-Stegun approximation
+ * 
+ * This is a high-precision approximation of the standard normal CDF.
+ * The Abramowitz-Stegun method provides accuracy to ~7 decimal places,
+ * which is sufficient for financial calculations.
+ * 
  * @param {number} x - Input value
  * @returns {number} Cumulative normal distribution value N(x)
  */
 function cumulativeNormal(x) {
-    // Abramowitz and Stegun approximation
+    // Abramowitz and Stegun approximation (Handbook of Mathematical Functions)
     const a1 =  0.254829592;
     const a2 = -0.284496736;
     const a3 =  1.421413741;
