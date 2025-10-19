@@ -103,12 +103,4 @@ This project demonstrates understanding of:
 - Advanced visualization features
 - Export functionality for results
 
-## Author
-
-[Your Name]  
-Course: Quantitative Finance / Computational Methods  
-Date: 2025
-
----
-
-*This project was developed as part of coursework in quantitative finance and computational methods, demonstrating practical application of Monte Carlo simulation techniques in option pricing.*
+*This project was developed as part of a personal project in quantitative finance and computational methods, demonstrating practical application of Monte Carlo simulation techniques in option pricing.*
