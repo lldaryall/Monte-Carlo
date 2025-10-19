@@ -1,6 +1,6 @@
 # Web Interface for Monte Carlo Option Pricing Simulator
 
-This directory contains the web interface for the Monte Carlo Option Pricing Simulator, designed to be hosted on GitHub Pages.
+Monte Carlo Option Pricing Simulator
 
 ## Files
 
